@@ -1,6 +1,5 @@
 ### Niveau d'Émission de Référence des Forêts (NERF)
 <p align="justify">
-A new ensemble approach to assess forest cover change through statistical sampling: Ensemble Sample Base Area Estimation (eSBAE)
 "Depuis 2011, la Côte d'Ivoire s'est engagée dans le mécanisme international REDD+ pour réduire les émissions de gaz à effet de serre dues à la déforestation et à la dégradation des forêts, en visant la conservation, la gestion durable et l'augmentation des stocks de carbone.
 </p>
 
