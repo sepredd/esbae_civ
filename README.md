@@ -1,6 +1,6 @@
 ### Niveau d'Émission de Référence des Forêts (NERF)
 <p align="justify">
-"Depuis 2011, la Côte d'Ivoire s'est engagée dans le mécanisme international REDD+ pour réduire les émissions de gaz à effet de serre dues à la déforestation et à la dégradation des forêts, en visant la conservation, la gestion durable et l'augmentation des stocks de carbone.
+Depuis 2011, la Côte d'Ivoire s'est engagée dans le mécanisme international REDD+ pour réduire les émissions de gaz à effet de serre dues à la déforestation et à la dégradation des forêts, en visant la conservation, la gestion durable et l'augmentation des stocks de carbone.
 </p>
 
 <p align="center">
@@ -8,7 +8,7 @@
 </p>
 
 <p align="justify">
-La soumission d'un Niveau d'Émission de Référence des Forêts (NERF) à la CCNUCC est nécessaire. Une première soumission a été réalisée pour évaluer les superficies forestières de 1986 à 2015, mais une mise à jour est maintenant essentielle. Pour ce faire, des outils de télédétection, des SIG et des logiciels comme ERDAS Imagine et ArcGIS ont été utilisés, ainsi que des outils de la collection Openforis de la FAO. La mise à jour du NERF pour la période 2015-2020 implique l'utilisation d'outils de la FAO tels que Collect Earth Online, SEPAL et le module eSBAE."
+La soumission d'un Niveau d'Émission de Référence des Forêts (NERF) à la CCNUCC est nécessaire. Une première soumission a été réalisée pour évaluer les superficies forestières de 1986 à 2015, mais une mise à jour est maintenant essentielle. Pour ce faire, des outils de télédétection, des SIG et des logiciels comme ERDAS Imagine et ArcGIS ont été utilisés, ainsi que des outils de la collection Openforis de la FAO. La mise à jour du NERF pour la période 2015-2020 implique l'utilisation d'outils de la FAO tels que Collect Earth Online, SEPAL et le module eSBAE.
 </p>
 
 ### Approche méthodologique utiliser pour le Niveau d'Émission de Référence des Forêts (NERF)
