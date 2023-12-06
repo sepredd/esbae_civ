@@ -1,0 +1,171 @@
+---
+title: "Dalenius and others stratification from the IGN-classified DB"
+author: "Javier Garcia Perez (Gamarra) & Rémi d'Annunzio"
+date: "28/10/2022"
+output:
+  html_document:
+    fig_width: 8
+    fig_height: 6
+---
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, include=TRUE, message=FALSE, results = FALSE)#,dev='pdf')
+```
+
+## Stratification methods
+The objective of the present document is to prepare some code to optimize the number of strata in a 
+univariate setting and use different allocation methods to detect strata boundaries and number of samples
+to allocate to each stratum.
+
+
+```{r, Upload of packages and data tables, echo=FALSE}
+# Dalenius stratification
+require(stratification)
+
+## Upload file
+CoteIv <- read.csv('/home/sepal-user/sbae_point_analysis_CIV/erp_1km/bdd_erp_2000_2015_supervised_IC_ign.csv')
+attach(CoteIv)
+
+##Prepare univariate data set. In the case of Cote d'Ivoire it comes from automatic time series analysis
+probchange<-CoteIv$prob_change
+target_cv <- 0.005
+special_fig_height <- 7
+```
+
+
+```{r, Detecting optimum number of strata, echo=FALSE}
+##
+### Example for strata.cumrootf
+#nrow defines the number of strata to explore
+res <- matrix(NA, nrow=7, ncol=2)
+i <- 1
+
+#INPUTS FOR strata.cumrootf
+# x values of stratification variable
+# CV target CV
+#Ls no. sampled strata (default is 3)
+# alloc allocation scheme. 3 exponents q1, q2, q3. Default is Neyman; q1,q3=0.5 and q2-0
+#nclass cumulative root frequency method only. Default is min(Ls*15,Nu) where Nu is the number of unique 
+#values in the x-vector from which units in the certainty stratum, if any, heve been removed.
+
+##Loop for Neyman allocation
+for ( n in seq(2,7,1)){
+  cum <- strata.cumrootf(x=probchange, CV=target_cv, Ls=n, alloc=c(0.5,0,0.5))#, nclass=n)
+  res[i,] <- c(n,cum$n)
+  i <- i + 1
+}
+
+plot(res, ylab="suggested sample size n", xlab="number of classes", main=expression(
+  paste("Example of the effect of nclass on n for the cum. Neyman",sqrt(f)," method")))
+
+
+##Loop for proportional allocation
+res <- matrix(NA, nrow=7, ncol=2)
+i <- 1
+for ( n in seq(2,7,1)){
+  cum <- strata.cumrootf(x=probchange, CV=target_cv, Ls=n, alloc=c(0.5,0,0))#, nclass=n)
+  res[i,] <- c(n,cum$n)
+  i <- i + 1
+}
+
+plot(res, ylab="suggested sample size n", xlab="number of classes", main=expression(
+  paste("Example of the effect of nclass on n for the cum. Proportional",sqrt(f)," method")))
+
+```
+
+## Simulations with different stratification options
+
+### Non Iterative allocation method: Dalenius & Hodges
+
+[Dalenius & Hodges, 1957](https://www.tandfonline.com/doi/abs/10.1080/03461238.1957.10405970).
+
+```{r Checking Non Iterative allocation method: Dalenius & Hodge, echo=FALSE}
+strata.Neyman4str <- strata.cumrootf(x=probchange, CV=target_cv, Ls=4, alloc=c(0.5,0,0.5), model="none")
+strata.Neyman3str <- strata.cumrootf(x=probchange, CV=target_cv, Ls=3, alloc=c(0.5,0,0.5), model="none")
+strata.propor3str <- strata.cumrootf(x=probchange, CV=target_cv, Ls=3, alloc=c(0.5,0,0),   model="none")
+```
+
+
+#### Non-iterative Neyman 4 strata
+```{r Checking strata boundaries and variances 4 strata, echo=FALSE,fig.height=special_fig_height}
+#Neyman allocation. 4 strata
+plot(strata.Neyman4str,main ="Dalenius Neyman with 4 strata",xlab= "Probability of change")
+```
+
+Probability breaks:`r strata.Neyman4str$bh`
+
+
+#### Non-iterative Neyman 3 strata
+```{r Checking strata boundaries and variances 3 strata, echo=FALSE,fig.height=special_fig_height}
+#Neyman allocation. 3 strata
+plot(strata.Neyman3str,main ="Dalenius Neyman with 3 strata",xlab= "Probability of change")
+```
+
+Probability breaks: `r strata.Neyman3str$bh`
+
+
+#### Non-iterative Proportionnal 3 strata: 
+```{r Checking strata boundaries and variances Proportional 3 strata, echo=FALSE,fig.height=special_fig_height}
+#Proportional allocation. 3 strata
+plot(strata.propor3str,main ="Dalenius Proportionnal with 3 strata",xlab= "Probability of change")
+```
+
+Probability breaks:`r strata.propor3str$bh`
+
+
+### Iterative allocation method: Lavallee-Hidiroglou
+
+Check this article [Hidiroglou et Kozak, 2017](https://www.researchgate.net/publication/319293358_Stratification_of_Skewed_Populations_A_Comparison_of_Optimisation-based_versus_Approximate_Methods).
+
+
+```{r Checking Iterative allocation method: Lavallee-Hidiroglou, echo=FALSE}
+strata.LHkozakNey4str    <- strata.LH(x = probchange, CV = target_cv, Ls = 4,alloc = c(0.5, 0, 0.5), takeall = 0, algo = "Kozak")
+strata.LHkozakNey3str    <- strata.LH(x = probchange, CV = target_cv, Ls = 3,alloc = c(0.5, 0, 0.5), takeall = 0, algo = "Kozak")
+strata.LHkozakNey3strpre <- strata.LH(x = probchange, CV = 0.01,      Ls = 3,alloc = c(0.5, 0, 0.5), takeall = 0, algo = "Kozak")
+strata.LHkozakpropor3str <- strata.LH(x = probchange, CV = target_cv, Ls = 3,alloc = c(0.5, 0, 0), takeall = 0, algo = "Kozak")
+```
+
+
+#### Iterative Neyman 4 strata: 
+```{r Checking strata boundaries and variances LH Kozak algorithm Neyman 4 , echo=FALSE,fig.height=special_fig_height}
+#LH Kozak algorithm Neyman 4 strata
+plot(strata.LHkozakNey4str,main ="Kozak Neyman with 4 strata",xlab= "Probability of change")
+```
+
+Probability breaks: `r strata.LHkozakNey4str$bh`
+
+
+#### Iterative Neyman 3 strata: 
+```{r Checking strata boundaries and variances LH Kozak algorithm Neyman 3 , echo=FALSE,fig.height=special_fig_height}
+#LH Kozak algorithm Neyman 3 strata
+plot(strata.LHkozakNey3str,main ="Kozak Neyman with 3 strata",xlab= "Probability of change")
+```
+
+Probability breaks: `r strata.LHkozakNey3str$bh`
+
+
+#### Iterative Proportionnal 3 strata: 
+```{r Checking strata boundaries and variances LH Kozak algorithm Proportional 3 , echo=FALSE,fig.height=special_fig_height}
+#LH Kozak algorithm Propor 3 strata
+plot(strata.LHkozakpropor3str,main ="Kozak Proportionnal with 3 strata",xlab= "Probability of change")
+```
+
+Probability breaks: `r strata.LHkozakpropor3str$bh`
+
+
+#### Iterative Proportionnal 3 strata with preliminary CV 0.01: 
+```{r Checking strata boundaries and variances LH Kozak algorithm Proportional 3 prelim CV, echo=FALSE,fig.height=special_fig_height}
+#LH Kozak algorithm Propor 3 strata
+plot(strata.LHkozakNey3strpre,main ="Kozak Neyman with 3 strata @CV 0.01",xlab= "Probability of change")
+```
+
+Probability breaks: `r strata.LHkozakNey3strpre$bh`
+
+## Limitations
+You should not take the output of the variances "as is": the algorithm here assumes that your 46000 sample point from time series IS the population, but in reality they are just a first SAMPLE of your whole country population. 
+
+So in reality the total variance should aim to take into account the additive effect of the sampling error from the allocation scheme we are selecting here PLUS the sampling error from the first sample which we don't know fully (it was estimated through the ESA CCI product simulation).
+
+That's why with a CV=0.01 you only get 400-700 total sample points to do. In reality you need to reduce much further the CV to ensure that we cover the potential sampling error motivated by the first phase (the time series analysis)
+
+In addition the first phase is actually NOT a sample per se, because it is in fact the result of modelling something over a sample, so you should in theory ALSO have a model error embedded in the first phase

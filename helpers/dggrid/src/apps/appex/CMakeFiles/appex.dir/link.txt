@@ -1,0 +1,1 @@
+/usr/bin/c++  -O3 -DNDEBUG   CMakeFiles/appex.dir/appex.cpp.o  -o appex  ../../lib/dglib/libdglib.a /usr/lib/libgdal.so ../../lib/shapelib/libshapelib.a ../../lib/proj4lib/libproj4lib.a 
